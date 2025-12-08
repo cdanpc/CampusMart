@@ -4,6 +4,7 @@ import com.appdevg5.technominds.Profile.ProfileEntity;
 import com.appdevg5.technominds.Profile.ProfileRepository;
 import com.appdevg5.technominds.Product.ProductEntity;
 import com.appdevg5.technominds.Product.ProductRepository;
+import com.appdevg5.technominds.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,16 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ProfileRepository profileRepository;
     private final ProductRepository productRepository;
+    private final NotificationService notificationService;
 
     public MessageService(MessageRepository messageRepository, 
                          ProfileRepository profileRepository,
-                         ProductRepository productRepository) {
+                         ProductRepository productRepository,
+                         NotificationService notificationService) {
         this.messageRepository = messageRepository;
         this.profileRepository = profileRepository;
         this.productRepository = productRepository;
+        this.notificationService = notificationService;
     }
 
     // READ
@@ -275,7 +279,27 @@ public class MessageService {
 
         // Ensure isRead is false on creation
         message.setIsRead(false);
-        return messageRepository.save(message);
+        MessageEntity savedMessage = messageRepository.save(message);
+        
+        // Create notification for receiver
+        try {
+            String senderName = sender.getFirstName() + " " + sender.getLastName();
+            String messagePreview = message.getContent() != null && message.getContent().length() > 50
+                ? message.getContent().substring(0, 47) + "..."
+                : message.getContent();
+            
+            notificationService.notifyNewMessage(
+                receiver.getId(),
+                savedMessage.getId().longValue(),
+                senderName,
+                messagePreview
+            );
+        } catch (Exception e) {
+            // Log error but don't fail the message send
+            System.err.println("Failed to create notification for message: " + e.getMessage());
+        }
+        
+        return savedMessage;
     }
 
     // UPDATE (Mark as read)

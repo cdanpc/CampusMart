@@ -1,28 +1,38 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { FiUser, FiHeart } from 'react-icons/fi';
-import { getAllProducts, likeProduct } from '../services/productService';
+import { getAllProducts, likeProduct, searchProducts } from '../services/productService';
 // Remove this if AppHeader is in a layout component:
 // import AppHeader from '../components/layout/AppHeader';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [sortBy, setSortBy] = useState('Latest');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [likingProducts, setLikingProducts] = useState(new Set());
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
 
   // Fetch products from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await getAllProducts();
-        setProducts(data);
+        const query = searchParams.get('search');
+        if (query) {
+          setSearchQuery(query);
+          const data = await searchProducts(query);
+          setProducts(data);
+        } else {
+          setSearchQuery('');
+          const data = await getAllProducts();
+          setProducts(data);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -31,7 +41,7 @@ export default function DashboardPage() {
     };
     
     fetchProducts();
-  }, []);
+  }, [searchParams]);
 
   // Handle like button click
   const handleLike = async (productId, event) => {
@@ -102,7 +112,12 @@ export default function DashboardPage() {
         <div className="container">
           <div className="dashboard__welcome">
             <h1>Welcome, {user?.profile?.first_name || 'John Doe'}!</h1>
-            <p>Discover amazing items from fellow CIT-U students</p>
+            <p>
+              {searchQuery 
+                ? `Search results for "${searchQuery}"` 
+                : 'Discover amazing items from fellow CIT-U students'
+              }
+            </p>
           </div>
 
           {loading && (
@@ -131,6 +146,17 @@ export default function DashboardPage() {
               >
                 Tradable Items
               </button>
+              {searchQuery && (
+                <button 
+                  className="filter-tab filter-tab--clear"
+                  onClick={() => {
+                    setSearchParams({});
+                    setSearchQuery('');
+                  }}
+                >
+                  Clear Search
+                </button>
+              )}
             </div>
 
             <div className="filter-dropdowns">
