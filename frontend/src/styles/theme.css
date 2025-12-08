@@ -1,0 +1,236 @@
+/**
+ * CampusMart Design System - Theme Variables
+ * 
+ * Contains all design tokens (colors, spacing, typography, etc.)
+ * Use these CSS custom properties throughout the application for consistency.
+ * 
+ * Usage: 
+ *   color: var(--color-primary);
+ *   background: var(--color-bg-accent);
+ */
+
+:root {
+  /* ========================================
+     Brand Colors
+     ======================================== */
+  
+  /* Primary/Brand - Deep Navy */
+  --color-primary: #052659;
+  --color-primary-rgb: 5, 38, 89;
+  --color-primary-dark: #041e47;
+  
+  /* Primary CTA/Active - Medium Blue */
+  --color-primary-active: #5483B3;
+  --color-primary-active-rgb: 84, 131, 179;
+  
+  /* Background/Accent - Very Light Blue */
+  --color-bg-accent: #C1E8FF;
+  --color-bg-accent-rgb: 193, 232, 255;
+  
+  /* Accent/Highlight - Vibrant Orange */
+  --color-accent: #FF7F00;
+  --color-accent-rgb: 255, 127, 0;
+  
+  
+  /* ========================================
+     Semantic Colors
+     ======================================== */
+  
+  /* Neutral/Base Colors */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1F2937;
+  --color-gray-900: #111827;
+  
+  /* Feedback/Semantic Colors */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-error: #F44336;
+  --color-danger: #F44336;
+  --color-info: #3B82F6;
+  
+  
+  /* ========================================
+     Application-Specific Tokens
+     ======================================== */
+  
+  /* Text Colors */
+  --text-primary: var(--color-primary);
+  --text-secondary: var(--color-gray-600);
+  --text-tertiary: var(--color-gray-500);
+  --text-on-primary: var(--color-white);
+  --text-link: var(--color-primary-active);
+  --text-accent: var(--color-accent);
+  --text-success: var(--color-success);
+  --text-error: var(--color-error);
+  --color-text: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-500);
+  
+  /* Background Colors */
+  --bg-page: var(--color-white);
+  --bg-card: var(--color-bg-accent);
+  --bg-hover: var(--color-gray-50);
+  --bg-overlay: rgba(var(--color-primary-rgb), 0.8);
+  --color-background: var(--color-gray-50);
+  
+  /* Border Colors */
+  --border-default: var(--color-gray-200);
+  --border-focus: var(--color-primary-active);
+  --border-error: var(--color-error);
+  --color-border: var(--color-gray-200);
+  
+  
+  /* ========================================
+     Component Tokens
+     ======================================== */
+  
+  /* Buttons */
+  --btn-primary-bg: var(--color-primary-active);
+  --btn-primary-text: var(--color-white);
+  --btn-primary-hover: #4272A0;
+  --btn-secondary-bg: transparent;
+  --btn-secondary-text: var(--color-primary);
+  --btn-secondary-border: var(--color-primary);
+  --btn-accent-bg: var(--color-accent);
+  --btn-accent-text: var(--color-white);
+  --btn-accent-hover: #E67300;
+  --btn-success-bg: var(--color-success);
+  --btn-success-text: var(--color-white);
+  --btn-success-hover: #45a049;
+  --btn-danger-bg: var(--color-danger);
+  --btn-danger-text: var(--color-white);
+  --btn-danger-hover: #D32F2F;
+  --btn-outline-bg: transparent;
+  --btn-outline-text: var(--color-primary);
+  --btn-outline-border: var(--color-border);
+  
+  /* Navigation */
+  --nav-bg: var(--color-primary);
+  --nav-text: var(--color-white);
+  --nav-active: var(--color-primary-active);
+  
+  /* Cards */
+  --card-bg: var(--color-bg-accent);
+  --card-border: transparent;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  /* Forms */
+  --input-bg: var(--color-white);
+  --input-border: var(--color-gray-300);
+  --input-focus-border: var(--color-primary-active);
+  --input-text: var(--color-gray-900);
+  --input-placeholder: var(--color-gray-400);
+  
+  /* Badges & Notifications */
+  --badge-new-bg: var(--color-accent);
+  --badge-new-text: var(--color-white);
+  --badge-success-bg: var(--color-success);
+  --badge-error-bg: var(--color-error);
+  --notification-dot: var(--color-accent);
+  
+  
+  /* ========================================
+     Spacing Scale
+     ======================================== */
+  
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  
+  
+  /* ========================================
+     Typography
+     ======================================== */
+  
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-heading: var(--font-family-base);
+  --font-family-mono: 'Courier New', Courier, monospace;
+  
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  
+  --font-xs: 0.75rem;         /* 12px - alias */
+  --font-sm: 0.875rem;        /* 14px - alias */
+  --font-base: 1rem;          /* 16px - alias */
+  --font-lg: 1.125rem;        /* 18px - alias */
+  --font-xl: 1.25rem;         /* 20px - alias */
+  --font-2xl: 1.5rem;         /* 24px - alias */
+  --font-3xl: 1.875rem;       /* 30px - alias */
+  --font-4xl: 2.25rem;        /* 36px - alias */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  
+  /* ========================================
+     Border Radius
+     ======================================== */
+  
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;  /* Fully rounded */
+  
+  
+  /* ========================================
+     Shadows
+     ======================================== */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  
+  /* ========================================
+     Z-Index Scale
+     ======================================== */
+  
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  
+  
+  /* ========================================
+     Transitions
+     ======================================== */
+  
+  --transition-base: 150ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+  --transition-fast: 100ms ease-in-out;
+}

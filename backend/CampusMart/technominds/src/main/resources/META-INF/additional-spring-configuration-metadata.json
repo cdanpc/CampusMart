@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret key used for signing JWT tokens. Must be at least 256 bits (32 characters) for HS256 algorithm.",
+      "defaultValue": null
+    },
+    {
+      "name": "jwt.expiration",
+      "type": "java.lang.Long",
+      "description": "JWT token expiration time in milliseconds. Default is 86400000 (24 hours).",
+      "defaultValue": 86400000
+    }
+  ]
+}
