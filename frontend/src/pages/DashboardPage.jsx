@@ -66,13 +66,34 @@ export default function DashboardPage() {
     }
   };
 
-  const filteredProducts = products.filter(product => {
-    // For "sale" tab: show products that are NOT trade-only (i.e., can be sold)
-    if (activeTab === 'sale' && (product.trade_only || product.tradeOnly)) return false;
-    // For "tradeable" tab: show products that ARE trade-only
-    if (activeTab === 'tradeable' && !(product.trade_only || product.tradeOnly)) return false;
-    return true;
-  });
+  const filteredProducts = products
+    .filter(product => {
+      // Filter by trade type
+      if (activeTab === 'sale' && (product.trade_only || product.tradeOnly)) return false;
+      if (activeTab === 'tradeable' && !(product.trade_only || product.tradeOnly)) return false;
+      
+      // Filter by category
+      if (selectedCategory !== 'All Categories') {
+        const productCategory = product.category?.name || 'Uncategorized';
+        if (productCategory !== selectedCategory) return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      // Sort by selected criteria
+      switch (sortBy) {
+        case 'Price: Low to High':
+          return (a.price || 0) - (b.price || 0);
+        case 'Price: High to Low':
+          return (b.price || 0) - (a.price || 0);
+        case 'Most Popular':
+          return (b.likeCount || b.like_count || 0) - (a.likeCount || a.like_count || 0);
+        case 'Latest':
+        default:
+          return new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0);
+      }
+    });
 
   return (
     <>
@@ -85,7 +106,7 @@ export default function DashboardPage() {
           </div>
 
           {loading && (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div className="dashboard__loading">
               <p>Loading products...</p>
             </div>
           )}
@@ -146,16 +167,12 @@ export default function DashboardPage() {
       <div className="dashboard__content">
         <div className="container">
           {filteredProducts.length === 0 ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '4rem 2rem',
-              color: '#6B7280'
-            }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📦</div>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#374151' }}>
+            <div className="dashboard__empty">
+              <div className="dashboard__empty-icon">📦</div>
+              <h2 className="dashboard__empty-title">
                 {loading ? 'Loading products...' : 'No products available'}
               </h2>
-              <p style={{ marginBottom: '2rem' }}>
+              <p className="dashboard__empty-message">
                 {loading 
                   ? 'Please wait while we fetch the latest items...'
                   : activeTab === 'all' 

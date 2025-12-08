@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiBell, FiLock, FiGlobe, FiEye, FiShield, FiMail, FiCheck } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -31,6 +31,17 @@ export default function SettingsPage() {
 
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
 
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem(`settings_${user?.profile?.profile_id}`);
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      if (parsed.notifications) setNotifications(parsed.notifications);
+      if (parsed.privacy) setPrivacy(parsed.privacy);
+      if (parsed.is2FAEnabled !== undefined) setIs2FAEnabled(parsed.is2FAEnabled);
+    }
+  }, [user?.profile?.profile_id]);
+
   const handleNotificationToggle = (key) => {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
   };
@@ -45,14 +56,17 @@ export default function SettingsPage() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    console.log('Saving settings:', {
+    const settings = {
       notifications,
       privacy,
+      is2FAEnabled,
       userId: user?.profile?.profile_id
-    });
+    };
+    
+    console.log('Saving settings:', settings);
 
-    // TODO: Implement actual API call
-    // await updateUserSettings({ notifications, privacy });
+    // Save to localStorage (MVP implementation)
+    localStorage.setItem(`settings_${user?.profile?.profile_id}`, JSON.stringify(settings));
 
     setIsSaving(false);
     setShowSuccessMessage(true);
@@ -84,16 +98,15 @@ export default function SettingsPage() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    console.log('Changing password:', {
+    console.log('Password change requested:', {
       userId: user?.profile?.profile_id,
       currentPassword: passwordForm.currentPassword,
       newPassword: passwordForm.newPassword
     });
 
-    // TODO: Implement actual API call
-    // await changePassword(passwordForm);
-
-    alert('Password changed successfully!');
+    // Note: Password change requires backend implementation
+    // For MVP, we simulate success
+    alert('Password change functionality requires backend implementation.\nYour request has been logged.');
     setIsChangePasswordOpen(false);
     setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
@@ -136,11 +149,13 @@ export default function SettingsPage() {
       );
 
       if (finalConfirm) {
-        console.log('Deleting account:', user?.profile?.profile_id);
-        // TODO: Implement actual account deletion API call
-        // await deleteAccount();
+        console.log('Account deletion requested for:', user?.profile?.profile_id);
         
-        alert('Your account has been deleted. You will be logged out.');
+        // Clear user data from localStorage
+        localStorage.removeItem(`settings_${user?.profile?.profile_id}`);
+        
+        // Note: Full account deletion requires backend implementation
+        alert('Account deletion requires backend implementation.\nFor now, you will be logged out and local data cleared.');
         logout();
         navigate('/');
       }

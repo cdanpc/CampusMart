@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getOffersBySeller, getOffersByBuyer, acceptOffer, rejectOffer, withdrawOffer, deleteTradeOffer } from '../../services/tradeOfferService';
-import AppHeader from '../../components/layout/AppHeader';
 import Button from '../../components/common/Button';
 import './TradeOffersPage.css';
 
@@ -141,8 +140,6 @@ export default function TradeOffersPage() {
 
   return (
     <div className="trade-offers-page">
-      <AppHeader />
-      
       <div className="trade-offers-container">
         <div className="page-header">
           <h1>Trade Offers</h1>

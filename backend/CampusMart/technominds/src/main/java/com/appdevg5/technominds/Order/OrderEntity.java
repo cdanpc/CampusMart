@@ -1,7 +1,7 @@
 package com.appdevg5.technominds.Order;
 
 import com.appdevg5.technominds.Profile.ProfileEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -29,19 +29,19 @@ public class OrderEntity {
     // The buyer in the transaction
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_profile_id", nullable = false)
-    @JsonManagedReference
+    @JsonIgnoreProperties({"orders", "products", "sentMessages", "receivedMessages", "tradeOffers", "reviews"})
     private ProfileEntity buyer;
 
     // The seller in the transaction
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_profile_id", nullable = false)
-    @JsonManagedReference
+    @JsonIgnoreProperties({"orders", "products", "sentMessages", "receivedMessages", "tradeOffers", "reviews"})
     private ProfileEntity seller;
 
     // The product being ordered
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonManagedReference
+    @JsonIgnoreProperties({"seller", "orders", "reviews", "likes", "tradeOffers"})
     private com.appdevg5.technominds.Product.ProductEntity product;
 
     // Total amount for the order (matches ERD name 'total_amount')

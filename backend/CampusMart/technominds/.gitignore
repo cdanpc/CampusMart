@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+
+### Uploads Directory ###
+uploads/
+
+### Logs ###
+logs/
+*.log
+
+### Sensitive Configuration ###
+application-prod.properties
+*-prod.properties

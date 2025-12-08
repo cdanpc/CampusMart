@@ -292,7 +292,7 @@ export default function TradeOfferModal({ isOpen, onClose, product }) {
             onChange={handleChange}
             placeholder="0.00 (optional)"
           />
-          <p className="form-help" style={{ marginTop: '-0.5rem', marginBottom: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          <p className="form-help">
             Optional: Add cash to sweeten the deal if your item's value is lower
           </p>
 

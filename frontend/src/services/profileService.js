@@ -23,3 +23,16 @@ export const deleteProfile = async (id) => {
   const response = await api.delete(`/profiles/${id}`);
   return response.data;
 };
+
+// Upload profile picture
+export const uploadProfilePicture = async (profileId, imageFile) => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  
+  const response = await api.post(`/profiles/${profileId}/upload-picture`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};

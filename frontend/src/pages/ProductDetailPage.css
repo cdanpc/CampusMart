@@ -3,6 +3,24 @@
   min-height: calc(100vh - 64px);
 }
 
+/* Loading and Error States */
+.product-detail__loading,
+.product-detail__error {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.product-detail__error {
+  color: #ef4444;
+}
+
+.back-link--button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
 /* Back Link */
 .back-link {
   display: inline-flex;
@@ -889,27 +907,6 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   margin-top: var(--space-2);
-}
-
-/* Star Styles */
-.star {
-  width: 20px;
-  height: 20px;
-}
-
-.star--filled {
-  color: #fbbf24;
-  fill: #fbbf24;
-}
-
-.star--half {
-  color: #fbbf24;
-  fill: url(#half-gradient);
-}
-
-.star--empty {
-  color: var(--color-gray-300);
-  fill: transparent;
 }
 
 /* Reviews List */

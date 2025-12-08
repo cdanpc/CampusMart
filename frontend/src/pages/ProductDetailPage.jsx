@@ -3,13 +3,15 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiChevronLeft, FiHeart, FiEye, FiMessageSquare, FiRefreshCw, FiTag, FiPackage, FiCheckCircle, FiBarChart2, FiUser, FiMail, FiPhone, FiStar, FiEdit } from 'react-icons/fi';
 import { FaInstagram } from 'react-icons/fa';
 import { getProductById, likeProduct, hasUserLikedProduct } from '../services/productService';
-import { getReviewsByProduct, calculateAverageRating, getRatingDistribution } from '../services/reviewService';
+import { getReviewsByProduct, calculateAverageRating, getRatingDistribution, createReview } from '../services/reviewService';
+import { getOrdersByBuyer } from '../services/orderService';
 import { useAuth } from '../context/AuthContext';
 import TradeOfferModal from '../components/common/TradeOfferModal';
 import ContactSellerModal from '../components/common/ContactSellerModal';
 import PlaceOrderModal from '../components/common/PlaceOrderModal';
 import ImagePreviewModal from '../components/common/ImagePreviewModal';
 import EditProductPanel from '../components/common/EditProductPanel';
+import RatingModal from '../components/common/RatingModal';
 import './ProductDetailPage.css';
 
 export default function ProductDetailPage() {
@@ -32,6 +34,9 @@ export default function ProductDetailPage() {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [previewImageIndex, setPreviewImageIndex] = useState(0);
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [isProductReviewOpen, setIsProductReviewOpen] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [purchasedOrder, setPurchasedOrder] = useState(null);
   
   // Reviews state
   const [reviews, setReviews] = useState([]);
@@ -59,6 +64,21 @@ export default function ProductDetailPage() {
         if (user?.profile?.id) {
           const liked = await hasUserLikedProduct(id, user.profile.id);
           setHasLiked(liked);
+          
+          // Check if user has purchased this product
+          try {
+            const orders = await getOrdersByBuyer(user.profile.id);
+            const productOrder = orders.find(order => 
+              (order.productId === parseInt(id) || order.product?.id === parseInt(id)) && 
+              order.status === 'completed'
+            );
+            if (productOrder) {
+              setHasPurchased(true);
+              setPurchasedOrder(productOrder);
+            }
+          } catch (err) {
+            console.error('Error checking purchase status:', err);
+          }
         }
         
         setError(null);
@@ -72,6 +92,30 @@ export default function ProductDetailPage() {
 
     fetchProduct();
   }, [id, user]);
+
+  // Handle submitting product review
+  const handleProductReview = async (ratingData) => {
+    try {
+      await createReview({
+        reviewerId: user.profile.id,
+        sellerId: product.seller?.id || product.seller_id,
+        productId: parseInt(id),
+        orderId: purchasedOrder?.id || purchasedOrder?.order_id,
+        rating: ratingData.rating,
+        comment: ratingData.comment
+      });
+      
+      // Refresh reviews
+      const reviewsData = await getReviewsByProduct(id);
+      setReviews(reviewsData || []);
+      
+      setIsProductReviewOpen(false);
+      alert('Review submitted successfully!');
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      alert('Failed to submit review. Please try again.');
+    }
+  };
 
   // Fetch product reviews
   useEffect(() => {
@@ -154,7 +198,7 @@ export default function ProductDetailPage() {
     return (
       <div className="product-detail">
         <div className="container">
-          <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <div className="product-detail__loading">
             <p>Loading product details...</p>
           </div>
         </div>
@@ -168,7 +212,7 @@ export default function ProductDetailPage() {
       <div className="product-detail">
         <div className="container">
           {fromSellerProfile ? (
-            <button onClick={() => navigate(`/seller/${sellerId}`)} className="back-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button onClick={() => navigate(`/seller/${sellerId}`)} className="back-link back-link--button">
               <FiChevronLeft className="back-link__icon" />
               <span>Back to Seller Profile</span>
             </button>
@@ -178,7 +222,7 @@ export default function ProductDetailPage() {
               <span>Back to Marketplace</span>
             </Link>
           )}
-          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#ef4444' }}>
+          <div className="product-detail__error">
             <h2>Product Not Found</h2>
             <p>{error || 'The product you are looking for does not exist.'}</p>
           </div>
@@ -325,8 +369,17 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
 
-                  {/* Sort Options */}
+                  {/* Sort Options and Write Review */}
                   <div className="reviews__controls">
+                    {hasPurchased && user?.profile?.id !== product?.seller?.id && (
+                      <button 
+                        onClick={() => setIsProductReviewOpen(true)}
+                        className="btn btn--primary reviews__write-btn"
+                      >
+                        <FiStar className="reviews__write-btn-icon" />
+                        Write a Review
+                      </button>
+                    )}
                     <label htmlFor="sort-reviews">Sort by:</label>
                     <select 
                       id="sort-reviews"
@@ -571,6 +624,19 @@ export default function ProductDetailPage() {
           />
         </>
       )}
+
+      {/* Product Review Modal */}
+      <RatingModal
+        isOpen={isProductReviewOpen}
+        onClose={() => setIsProductReviewOpen(false)}
+        orderData={{
+          productName: product?.name,
+          sellerName: product?.seller?.firstName + ' ' + product?.seller?.lastName,
+          sellerId: product?.seller?.id || product?.seller_id,
+          productId: parseInt(id)
+        }}
+        onSubmit={handleProductReview}
+      />
     </div>
   );
 }

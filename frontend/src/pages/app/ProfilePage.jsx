@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { FiSettings, FiMail, FiPhone, FiCalendar, FiStar, FiDollarSign, FiHeart, FiPackage } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { getProductsBySeller, deleteProduct, getProductById } from '../../services/productService';
-import { updateProfile } from '../../services/profileService';
+import { updateProfile, getProfileById } from '../../services/profileService';
 import { getOrdersByBuyer, getOrdersBySeller } from '../../services/orderService';
-import { getReviewsBySeller } from '../../services/reviewService';
+import { getReviewsBySeller, createReview } from '../../services/reviewService';
 import CreateProductPanel from '../../components/common/CreateProductPanel';
 import EditProductPanel from '../../components/common/EditProductPanel';
 import EditProfileModal from '../../components/common/EditProfileModal';
@@ -236,10 +236,32 @@ export default function ProfilePage() {
     setIsRatingOpen(true);
   };
 
-  const handleSubmitRating = (ratingData) => {
-    console.log('Rating submitted:', ratingData);
-    // TODO: API call to save rating
-    // POST /api/reviews with ratingData
+  const handleSubmitRating = async (ratingData) => {
+    try {
+      console.log('Rating submitted:', ratingData);
+      
+      // Call API to save rating
+      await createReview({
+        reviewerId: user.profile.profile_id,
+        sellerId: ratingData.sellerId,
+        productId: ratingData.productId,
+        orderId: ratingData.orderId,
+        rating: ratingData.rating,
+        comment: ratingData.comment
+      });
+      
+      // Refresh reviews after submission
+      await loadReviews();
+      
+      // Close modal
+      setIsRatingOpen(false);
+      setOrderToRate(null);
+      
+      alert('Rating submitted successfully!');
+    } catch (error) {
+      console.error('Failed to submit rating:', error);
+      alert('Failed to submit rating. Please try again.');
+    }
   };
 
   const handleProfileUpdate = async (profileData) => {
@@ -250,17 +272,24 @@ export default function ProfilePage() {
       const updatedProfile = await updateProfile(user.profile.id, profileData);
       console.log('Updated profile response:', updatedProfile);
       
-      // Update user in AuthContext
+      // Fetch fresh profile data to get the updated profile picture URL
+      const freshProfile = await getProfileById(user.profile.id);
+      console.log('Fresh profile data:', freshProfile);
+      
+      // Update user in AuthContext with fresh data
       const updatedUser = {
         ...user,
         profile: {
           ...user.profile,
-          ...updatedProfile
+          ...freshProfile
         }
       };
       
       console.log('Updating user in context:', updatedUser);
       updateUser(updatedUser);
+      
+      // Also update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       
       return updatedProfile;
     } catch (error) {
@@ -283,7 +312,15 @@ export default function ProfilePage() {
             {/* Profile Card */}
             <section className="profile-card">
               <div className="profile-card__avatar">
-                {getInitials(currentUser.firstName || currentUser.first_name || 'U', currentUser.lastName || currentUser.last_name || 'N')}
+                {(currentUser.profilePicture || currentUser.profile_picture) ? (
+                  <img 
+                    src={currentUser.profilePicture || currentUser.profile_picture} 
+                    alt="Profile"
+                    className="profile-card__avatar-image"
+                  />
+                ) : (
+                  getInitials(currentUser.firstName || currentUser.first_name || 'U', currentUser.lastName || currentUser.last_name || 'N')
+                )}
               </div>
               <h2 className="profile-card__name">
                 {currentUser.firstName || currentUser.first_name} {currentUser.lastName || currentUser.last_name}
