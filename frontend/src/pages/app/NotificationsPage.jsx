@@ -60,6 +60,7 @@ export default function NotificationsPage() {
   const getNotificationIcon = (type) => {
     const iconMap = {
       'MESSAGE': FiMessageSquare,
+      'MESSAGE_RECEIVED': FiMessageSquare,
       'ORDER': FiShoppingBag,
       'ORDER_PLACED': FiShoppingBag,
       'ORDER_CONFIRMED': FiShoppingBag,

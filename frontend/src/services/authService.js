@@ -108,6 +108,14 @@ export const logout = () => {
   localStorage.removeItem('user');
 };
 
+export const changePassword = async (userId, currentPassword, newPassword) => {
+  const response = await api.put(`/auth/users/${userId}/change-password`, {
+    currentPassword,
+    newPassword
+  });
+  return response.data;
+};
+
 export const getCurrentUser = () => {
   const userJson = localStorage.getItem('user');
   return userJson ? JSON.parse(userJson) : null;

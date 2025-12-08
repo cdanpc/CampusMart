@@ -162,4 +162,29 @@ public class AuthService {
         user.setPassword(hashedPassword);
         userRepository.save(user);
     }
+
+    /**
+     * Change user password
+     */
+    @Transactional
+    public void changePassword(Integer userId, String currentPassword, String newPassword) {
+        // Find user by ID
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        // Validate new password (at least 8 characters)
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("New password must be at least 8 characters long");
+        }
+
+        // Hash and save new password
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+    }
 }

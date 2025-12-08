@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiSettings, FiLogOut, FiUser, FiBell, FiMessageSquare, FiSearch, FiRepeat } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { getUnreadNotifications, getUnreadCount, markAsRead, markAllAsRead } from '../../services/notificationService';
@@ -12,7 +12,6 @@ import './AppHeader.css';
 export default function AppHeader() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -20,6 +19,7 @@ export default function AppHeader() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [pendingOffersCount, setPendingOffersCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const profileMenuRef = useRef(null);
   const notificationRef = useRef(null);
 
@@ -147,6 +147,22 @@ export default function AppHeader() {
     setIsProfileMenuOpen(false);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/dashboard?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        navigate(`/dashboard?search=${encodeURIComponent(searchQuery.trim())}`);
+      }
+    }
+  };
+
   return (
     <>
       <header className="app-header">
@@ -161,14 +177,17 @@ export default function AppHeader() {
               </span>
             </Link>
 
-            <div className="app-header__search">
+            <form className="app-header__search" onSubmit={handleSearch}>
               <FiSearch className="app-header__search-icon" />
               <input 
                 type="text" 
                 placeholder="Search items, sellers..." 
                 className="app-header__search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
               />
-            </div>
+            </form>
 
             <div className="app-header__actions">
               <button 

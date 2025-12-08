@@ -156,4 +156,10 @@ public class NotificationService {
         String message = String.format("Order for '%s' has been cancelled. Reason: %s", productName, reason);
         return createNotification(profileId, "ORDER_CANCELLED", title, message, orderId, "ORDER");
     }
+    
+    public NotificationEntity notifyNewMessage(Integer receiverId, Long messageId, String senderName, String messagePreview) {
+        String title = "New Message";
+        String message = String.format("%s sent you a message: %s", senderName, messagePreview);
+        return createNotification(receiverId, "MESSAGE_RECEIVED", title, message, messageId, "MESSAGE");
+    }
 }

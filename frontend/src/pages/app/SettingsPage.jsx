@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiBell, FiLock, FiGlobe, FiEye, FiShield, FiMail, FiCheck } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import { changePassword } from '../../services/authService';
 import './SettingsPage.css';
 
 export default function SettingsPage() {
@@ -95,20 +96,31 @@ export default function SettingsPage() {
       return;
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    console.log('Password change requested:', {
-      userId: user?.profile?.profile_id,
-      currentPassword: passwordForm.currentPassword,
-      newPassword: passwordForm.newPassword
-    });
-
-    // Note: Password change requires backend implementation
-    // For MVP, we simulate success
-    alert('Password change functionality requires backend implementation.\nYour request has been logged.');
-    setIsChangePasswordOpen(false);
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    try {
+      setIsSaving(true);
+      await changePassword(
+        user?.id,
+        passwordForm.currentPassword,
+        passwordForm.newPassword
+      );
+      
+      alert('Password changed successfully!');
+      setIsChangePasswordOpen(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      console.error('Password change error:', error);
+      
+      // Handle specific error cases
+      if (error.response?.status === 401 || error.response?.data?.message?.includes('current password')) {
+        alert('Current password is incorrect. Please try again.');
+      } else if (error.response?.status === 400) {
+        alert(error.response.data.message || 'Invalid password format. Please try again.');
+      } else {
+        alert('Failed to change password. Please try again later.');
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEnable2FA = () => {

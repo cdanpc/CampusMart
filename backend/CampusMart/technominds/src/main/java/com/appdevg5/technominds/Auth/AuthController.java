@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"}, allowCredentials = "true")
 public class AuthController {
 
     private final AuthService authService;
@@ -92,6 +91,30 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to fix password"));
+        }
+    }
+
+    /**
+     * Change password endpoint
+     */
+    @PutMapping("/users/{userId}/change-password")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Integer userId,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            authService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+        } catch (IllegalArgumentException e) {
+            // Handle both "user not found" and "incorrect password" errors
+            if (e.getMessage().contains("incorrect")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", e.getMessage()));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to change password"));
         }
     }
 }
