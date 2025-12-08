@@ -38,6 +38,9 @@ public class ProfileEntity {
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
+    @Column(name = "profile_picture", length = 500)
+    private String profilePicture;
+
     @Column(name = "seller_rating", precision = 3, scale = 2)
     private java.math.BigDecimal sellerRating = java.math.BigDecimal.ZERO;
 
@@ -129,6 +132,14 @@ public class ProfileEntity {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public Integer getTotalReviews() {

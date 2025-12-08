@@ -439,13 +439,7 @@ export default function CreateProductPanel({ isOpen, onClose, onProductCreated }
           </div>
 
           {errors.submit && (
-            <div style={{ 
-              padding: '12px', 
-              backgroundColor: '#fee', 
-              color: '#c33', 
-              borderRadius: '8px',
-              marginBottom: '16px'
-            }}>
+            <div className="error-message--submit">
               {errors.submit}
             </div>
           )}

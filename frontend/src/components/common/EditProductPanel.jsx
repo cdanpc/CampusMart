@@ -491,13 +491,7 @@ export default function EditProductPanel({ isOpen, onClose, productData, onProdu
           </div>
 
           {errors.submit && (
-            <div style={{ 
-              padding: '12px', 
-              backgroundColor: '#fee', 
-              color: '#c33', 
-              borderRadius: '8px',
-              marginBottom: '16px'
-            }}>
+            <div className="error-message--submit">
               {errors.submit}
             </div>
           )}

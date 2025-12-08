@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FiX, FiCamera } from 'react-icons/fi';
+import { uploadProfilePicture } from '../../services/profileService';
 import Input from './Input';
 import Button from './Button';
 import './EditProfileModal.css';
@@ -101,13 +102,36 @@ export default function EditProfileModal({ isOpen, onClose, userData, onSave }) 
           email: formData.email
         };
         
+        // Save profile data first
         if (onSave) {
           await onSave(profileData);
         }
         
+        // Upload profile picture if selected
         if (profileImage) {
-          console.log('TODO: Upload profile image:', profileImage);
-          // TODO: Implement image upload when backend supports it
+          try {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            const profileId = userData?.profile?.profile_id || userData?.profile?.id;
+            
+            if (profileId) {
+              const uploadResult = await uploadProfilePicture(profileId, profileImage);
+              console.log('Profile picture uploaded:', uploadResult);
+              
+              // Wait a moment for backend to update profile
+              await new Promise(resolve => setTimeout(resolve, 500));
+              
+              // Trigger profile refresh by calling onSave again with empty data
+              // This will cause ProfilePage to refetch the profile with the new picture URL
+              if (onSave) {
+                await onSave(profileData);
+              }
+            } else {
+              console.error('Profile ID not found');
+            }
+          } catch (uploadError) {
+            console.error('Failed to upload profile picture:', uploadError);
+            alert('Profile updated but image upload failed. Please try again.');
+          }
         }
         
         alert('Profile updated successfully!');
