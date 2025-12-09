@@ -114,6 +114,7 @@ export default function LandingPage() {
       <section className="contact" id="contact">
         <div className="container">
           <div className="contact__content">
+            <br />
             <h2>Get In Touch</h2>
             <p>Have questions? We'd love to hear from you.</p>
             <div className="contact__info">
