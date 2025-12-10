@@ -29,4 +29,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
      * Finds all products that are currently available.
      */
     List<ProductEntity> findByIsAvailableTrue();
+    
+    /**
+     * Finds products by seller ID where is_available is true.
+     */
+    List<ProductEntity> findBySeller_IdAndIsAvailableTrue(Integer sellerId);
 }

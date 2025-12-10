@@ -5,12 +5,16 @@ import com.appdevg5.technominds.Product.ProductEntity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "conversation_reports")
+@Getter
+@Setter
 @NoArgsConstructor
 public class ConversationReportEntity {
 
@@ -41,54 +45,4 @@ public class ConversationReportEntity {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ProfileEntity getReporter() {
-        return reporter;
-    }
-
-    public void setReporter(ProfileEntity reporter) {
-        this.reporter = reporter;
-    }
-
-    public ProfileEntity getReportedUser() {
-        return reportedUser;
-    }
-
-    public void setReportedUser(ProfileEntity reportedUser) {
-        this.reportedUser = reportedUser;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

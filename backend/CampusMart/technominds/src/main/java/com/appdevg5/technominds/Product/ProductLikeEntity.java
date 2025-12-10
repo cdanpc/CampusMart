@@ -2,12 +2,18 @@ package com.appdevg5.technominds.Product;
 
 import com.appdevg5.technominds.Profile.ProfileEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product_likes", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"product_id", "profile_id"})
 })
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProductLikeEntity {
 
     @Id
@@ -31,44 +37,8 @@ public class ProductLikeEntity {
         likedAt = LocalDateTime.now();
     }
 
-    // Constructors
-    public ProductLikeEntity() {}
-
     public ProductLikeEntity(ProductEntity product, ProfileEntity profile) {
         this.product = product;
         this.profile = profile;
-    }
-
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public ProfileEntity getProfile() {
-        return profile;
-    }
-
-    public void setProfile(ProfileEntity profile) {
-        this.profile = profile;
-    }
-
-    public LocalDateTime getLikedAt() {
-        return likedAt;
-    }
-
-    public void setLikedAt(LocalDateTime likedAt) {
-        this.likedAt = likedAt;
     }
 }

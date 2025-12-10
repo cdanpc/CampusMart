@@ -12,6 +12,9 @@ import {
   reportConversation,
   uploadMessageImage
 } from '../../services/messageService';
+import { formatRelativeTime } from '../../utils';
+import ConversationList from '../../components/common/ConversationList';
+import ImageUploadModal from '../../components/common/ImageUploadModal';
 import './MessagesPage.css';
 
 export default function MessagesPage() {
@@ -41,10 +44,10 @@ export default function MessagesPage() {
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
   
   // Debug: Log user structure to identify the issue
-  console.log('[MessagesPage] Raw localStorage user:', localStorage.getItem('user'));
-  console.log('[MessagesPage] Parsed currentUser:', currentUser);
-  console.log('[MessagesPage] currentUser?.profile:', currentUser?.profile);
-  console.log('[MessagesPage] currentUser?.profile?.id:', currentUser?.profile?.id);
+  // console.log('[MessagesPage] Raw localStorage user:', localStorage.getItem('user'));
+  // console.log('[MessagesPage] Parsed currentUser:', currentUser);
+  // console.log('[MessagesPage] currentUser?.profile:', currentUser?.profile);
+  // console.log('[MessagesPage] currentUser?.profile?.id:', currentUser?.profile?.id);
   
   const currentUserId = currentUser?.profile?.id || null;
 
@@ -374,22 +377,6 @@ export default function MessagesPage() {
     }
   };
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return `${days}d ago`;
-    } else if (hours > 0) {
-      return `${hours}h ago`;
-    } else {
-      return 'Just now';
-    }
-  };
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
     
@@ -483,7 +470,7 @@ export default function MessagesPage() {
                         {conv.otherUserFirstName} {conv.otherUserLastName}
                       </h3>
                       <span className="conversation-time">
-                        {formatTime(conv.lastMessageTime)}
+                        {formatRelativeTime(conv.lastMessageTime)}
                       </span>
                     </div>
                     <p className="conversation-product">

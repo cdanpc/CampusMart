@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Service layer for managing Product business logic.
@@ -33,34 +32,27 @@ public class ProductService {
     }
 
     public List<ProductEntity> getAllProducts() {
-        // Return only available products matching the ERD column is_available
-        return productRepository.findAll().stream()
-                .filter(p -> Boolean.TRUE.equals(p.getIsAvailable()))
-                .collect(Collectors.toList());
+        // Use database query instead of in-memory filtering
+        return productRepository.findByIsAvailableTrue();
     }
 
     public List<ProductEntity> getProductsBySeller(Integer sellerId) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getSeller() != null && sellerId != null && sellerId.equals(p.getSeller().getId()))
-                .collect(Collectors.toList());
+        // Use database query instead of in-memory filtering
+        return productRepository.findBySeller_Id(sellerId);
     }
     
     public List<ProductEntity> getAvailableProductsBySeller(Integer sellerId) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getSeller() != null && sellerId != null && sellerId.equals(p.getSeller().getId()))
-                .filter(p -> Boolean.TRUE.equals(p.getIsAvailable()))
-                .collect(Collectors.toList());
+        // Use database query instead of in-memory filtering
+        return productRepository.findBySeller_IdAndIsAvailableTrue(sellerId);
     }
 
     public List<ProductEntity> searchProducts(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return getAllProducts();
         }
-        String q = searchTerm.toLowerCase();
-        return productRepository.findAll().stream()
-                .filter(p -> (p.getName() != null && p.getName().toLowerCase().contains(q))
-                        || (p.getDescription() != null && p.getDescription().toLowerCase().contains(q)))
-                .collect(Collectors.toList());
+        // Use database query instead of in-memory filtering
+        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                searchTerm, searchTerm);
     }
 
     // CREATE (Listing a new product)

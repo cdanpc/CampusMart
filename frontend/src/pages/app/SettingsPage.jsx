@@ -64,7 +64,7 @@ export default function SettingsPage() {
       userId: user?.profile?.profile_id
     };
     
-    console.log('Saving settings:', settings);
+    // console.log('Saving settings:', settings);
 
     // Save to localStorage (MVP implementation)
     localStorage.setItem(`settings_${user?.profile?.profile_id}`, JSON.stringify(settings));

@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
@@ -19,6 +21,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "trade_offers")
+@Getter
+@Setter
 @NoArgsConstructor
 public class TradeOfferEntity {
 
@@ -72,112 +76,4 @@ public class TradeOfferEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    // Getters and setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public ProfileEntity getOfferer() {
-        return offerer;
-    }
-
-    public void setOfferer(ProfileEntity offerer) {
-        this.offerer = offerer;
-    }
-
-    public BigDecimal getOfferedPrice() {
-        return offeredPrice;
-    }
-
-    public void setOfferedPrice(BigDecimal offeredPrice) {
-        this.offeredPrice = offeredPrice;
-    }
-
-    public String getTradeDescription() {
-        return tradeDescription;
-    }
-
-    public void setTradeDescription(String tradeDescription) {
-        this.tradeDescription = tradeDescription;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public BigDecimal getItemEstimatedValue() {
-        return itemEstimatedValue;
-    }
-
-    public void setItemEstimatedValue(BigDecimal itemEstimatedValue) {
-        this.itemEstimatedValue = itemEstimatedValue;
-    }
-
-    public String getItemCondition() {
-        return itemCondition;
-    }
-
-    public void setItemCondition(String itemCondition) {
-        this.itemCondition = itemCondition;
-    }
-
-    public String getItemImageUrl() {
-        return itemImageUrl;
-    }
-
-    public void setItemImageUrl(String itemImageUrl) {
-        this.itemImageUrl = itemImageUrl;
-    }
-
-    public BigDecimal getCashComponent() {
-        return cashComponent;
-    }
-
-    public void setCashComponent(BigDecimal cashComponent) {
-        this.cashComponent = cashComponent;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    // createdAt is managed by Hibernate; setter provided for completeness
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    // updatedAt is managed by Hibernate; setter provided for completeness
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

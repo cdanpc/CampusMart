@@ -1,6 +1,7 @@
 package com.appdevg5.technominds.Order;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.Map;
  * REST Controller for managing finalized orders.
  * Base URL: /api/orders
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -70,14 +72,11 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderEntity order) {
         try {
-            System.out.println("[OrderController] Received order creation request:");
-            System.out.println("  Buyer ID: " + (order.getBuyer() != null ? order.getBuyer().getId() : "null"));
-            System.out.println("  Seller ID: " + (order.getSeller() != null ? order.getSeller().getId() : "null"));
-            System.out.println("  Product ID: " + (order.getProduct() != null ? order.getProduct().getId() : "null"));
-            System.out.println("  Quantity: " + order.getQuantity());
-            System.out.println("  Total Amount: " + order.getTotalAmount());
-            System.out.println("  Payment Method: " + order.getPaymentMethod());
-            System.out.println("  Delivery Notes: " + order.getDeliveryNotes());
+            log.debug("Received order creation request: buyerId={}, sellerId={}, productId={}, quantity={}, totalAmount={}, paymentMethod={}",
+                    order.getBuyer() != null ? order.getBuyer().getId() : null,
+                    order.getSeller() != null ? order.getSeller().getId() : null,
+                    order.getProduct() != null ? order.getProduct().getId() : null,
+                    order.getQuantity(), order.getTotalAmount(), order.getPaymentMethod());
             
             OrderEntity newOrder = orderService.createOrder(order);
 
@@ -87,11 +86,11 @@ public class OrderController {
                     .buildAndExpand(newOrder.getId())
                     .toUri();
 
-            System.out.println("[OrderController] Order created successfully with ID: " + newOrder.getId());
+            log.info("Order created successfully with ID: {}", newOrder.getId());
             return ResponseEntity.created(location).body(new OrderDTO(newOrder));
         } catch (IllegalArgumentException e) {
             // Return 400 Bad Request for validation errors
-            System.err.println("[OrderController] Validation error: " + e.getMessage());
+            log.warn("Validation error creating order: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -100,8 +99,7 @@ public class OrderController {
                     ));
         } catch (Exception e) {
             // Return 500 Internal Server Error for unexpected errors
-            System.err.println("[OrderController] Unexpected error creating order: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Unexpected error creating order: {}", e.getMessage(), e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(

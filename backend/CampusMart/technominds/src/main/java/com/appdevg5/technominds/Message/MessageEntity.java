@@ -5,12 +5,16 @@ import com.appdevg5.technominds.Product.ProductEntity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
+@Getter
+@Setter
 @NoArgsConstructor
 public class MessageEntity {
 
@@ -55,95 +59,4 @@ public class MessageEntity {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ProfileEntity getSender() {
-        return sender;
-    }
-
-    public void setSender(ProfileEntity sender) {
-        this.sender = sender;
-    }
-
-    public ProfileEntity getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(ProfileEntity receiver) {
-        this.receiver = receiver;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Boolean getIsRead() {
-        return isRead;
-    }
-
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Boolean getIsArchived() {
-        return isArchived;
-    }
-
-    public void setIsArchived(Boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-
-    public Boolean getIsMuted() {
-        return isMuted;
-    }
-
-    public void setIsMuted(Boolean isMuted) {
-        this.isMuted = isMuted;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    // createdAt is set by the database/Hibernate; setter included for completeness but typically unused
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

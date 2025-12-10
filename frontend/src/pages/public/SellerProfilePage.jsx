@@ -4,6 +4,8 @@ import { FiChevronLeft, FiMail, FiPhone, FiStar, FiCalendar, FiMessageSquare, Fi
 import { FaInstagram } from 'react-icons/fa';
 import ContactSellerModal from '../../components/common/ContactSellerModal';
 import SellerRatingModal from '../../components/common/SellerRatingModal';
+import ProductCard from '../../components/common/ProductCard';
+import StarRating from '../../components/common/StarRating';
 import { getSellerInfo, getSellerListings, getSellerReviews, submitSellerRating } from '../../services/sellerService';
 import './SellerProfilePage.css';
 
@@ -85,23 +87,6 @@ export default function SellerProfilePage() {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`;
   };
 
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FiStar key={`full-${i}`} className="star star--filled" />);
-    }
-    if (hasHalfStar) {
-      stars.push(<FiStar key="half" className="star star--half" />);
-    }
-    while (stars.length < 5) {
-      stars.push(<FiStar key={`empty-${stars.length}`} className="star star--empty" />);
-    }
-    return stars;
-  };
-
   const handleSubmitRating = async (ratingData) => {
     try {
       await submitSellerRating(ratingData);
@@ -178,7 +163,7 @@ export default function SellerProfilePage() {
             
             <div className="seller-profile-rating">
               <div className="rating-stars">
-                {renderStars(seller.sellerRating || 0)}
+                <StarRating rating={seller.sellerRating || 0} size={20} />
               </div>
               <span className="rating-text">
                 {seller.sellerRating?.toFixed(1) || '0.0'}/5.0 · {seller.totalReviews} reviews
@@ -252,31 +237,13 @@ export default function SellerProfilePage() {
           <div className="seller-listings-grid">
             {sellerListings.length > 0 ? (
               sellerListings.map((product) => (
-                <Link 
+                <ProductCard
                   key={product.id}
-                  to={`/product/${product.id}`}
-                  state={{ fromSellerProfile: true, sellerId: sellerId }}
-                  className="product-card"
-                >
-                  <div className="product-card__image-wrapper">
-                    <img 
-                      src={product.imageUrl || 'https://placehold.co/300x300/1f2937/ffffff?text=No+Image'} 
-                      alt={product.name}
-                      className="product-card__image"
-                    />
-                  </div>
-                  <div className="product-card__content">
-                    <h3 className="product-card__name">{product.name}</h3>
-                    <p className="product-card__category">{product.category?.name || 'Uncategorized'}</p>
-                    <p className="product-card__price">
-                      ₱{product.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                    </p>
-                    <div className="product-card__stats">
-                      <span>❤️ {product.likeCount || 0}</span>
-                      <span>👁️ {product.viewCount || 0}</span>
-                    </div>
-                  </div>
-                </Link>
+                  product={product}
+                  linkState={{ fromSellerProfile: true, sellerId: sellerId }}
+                  showSeller={false}
+                  showStats={true}
+                />
               ))
             ) : (
               <div className="empty-state">
@@ -331,7 +298,7 @@ export default function SellerProfilePage() {
                           </div>
                         </div>
                         <div className="review-rating">
-                          {renderStars(review.rating)}
+                          <StarRating rating={review.rating} size={16} />
                         </div>
                       </div>
                       <p className="review-text">{review.comment}</p>

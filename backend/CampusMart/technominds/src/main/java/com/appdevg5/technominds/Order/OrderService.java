@@ -6,6 +6,7 @@ import com.appdevg5.technominds.Profile.ProfileEntity;
 import com.appdevg5.technominds.Profile.ProfileRepository;
 import com.appdevg5.technominds.Review.ReviewRepository;
 import com.appdevg5.technominds.service.NotificationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Service layer for managing Order-related business logic.
  */
+@Slf4j
 @Service
 public class OrderService {
 
@@ -95,71 +97,71 @@ public class OrderService {
     // CREATE
     @Transactional
     public OrderEntity createOrder(OrderEntity order) {
-        System.out.println("[OrderService] Starting order creation...");
+        log.debug("Starting order creation");
         
         // Validate buyer exists
         if (order.getBuyer() == null || order.getBuyer().getId() == null) {
-            System.err.println("[OrderService] Validation failed: Buyer is null or missing ID");
+            log.warn("Validation failed: Buyer is null or missing ID");
             throw new IllegalArgumentException("Buyer is required");
         }
         
         // Validate seller exists
         if (order.getSeller() == null || order.getSeller().getId() == null) {
-            System.err.println("[OrderService] Validation failed: Seller is null or missing ID");
+            log.warn("Validation failed: Seller is null or missing ID");
             throw new IllegalArgumentException("Seller is required");
         }
         
         // Validate product exists
         if (order.getProduct() == null || order.getProduct().getId() == null) {
-            System.err.println("[OrderService] Validation failed: Product is null or missing ID");
+            log.warn("Validation failed: Product is null or missing ID");
             throw new IllegalArgumentException("Product is required");
         }
         
-        System.out.println("[OrderService] Basic validation passed");
+        log.debug("Basic validation passed");
         
         // Prevent buying your own product
         if (order.getBuyer().getId().equals(order.getSeller().getId())) {
-            System.err.println("[OrderService] Validation failed: Buyer and seller are the same");
+            log.warn("Validation failed: Buyer and seller are the same");
             throw new IllegalArgumentException("You cannot buy your own product");
         }
         
-        System.out.println("[OrderService] Loading entities from database...");
+        log.debug("Loading entities from database");
         
         // Load actual entities from database
         ProfileEntity buyer = profileRepository.findById(order.getBuyer().getId())
                 .orElseThrow(() -> {
-                    System.err.println("[OrderService] Buyer not found with ID: " + order.getBuyer().getId());
+                    log.warn("Buyer not found with ID: {}", order.getBuyer().getId());
                     return new IllegalArgumentException("Buyer not found");
                 });
-        System.out.println("[OrderService] Buyer loaded: " + buyer.getFirstName() + " " + buyer.getLastName());
+        log.debug("Buyer loaded: {} {}", buyer.getFirstName(), buyer.getLastName());
         
         ProfileEntity seller = profileRepository.findById(order.getSeller().getId())
                 .orElseThrow(() -> {
-                    System.err.println("[OrderService] Seller not found with ID: " + order.getSeller().getId());
+                    log.warn("Seller not found with ID: {}", order.getSeller().getId());
                     return new IllegalArgumentException("Seller not found");
                 });
-        System.out.println("[OrderService] Seller loaded: " + seller.getFirstName() + " " + seller.getLastName());
+        log.debug("Seller loaded: {} {}", seller.getFirstName(), seller.getLastName());
         
         ProductEntity product = productRepository.findById(order.getProduct().getId())
                 .orElseThrow(() -> {
-                    System.err.println("[OrderService] Product not found with ID: " + order.getProduct().getId());
+                    log.warn("Product not found with ID: {}", order.getProduct().getId());
                     return new IllegalArgumentException("Product not found");
                 });
-        System.out.println("[OrderService] Product loaded: " + product.getName());
+        log.debug("Product loaded: {}", product.getName());
         
         // Verify product seller matches order seller
         if (!product.getSeller().getId().equals(seller.getId())) {
-            System.err.println("[OrderService] Seller mismatch: Product seller ID " + product.getSeller().getId() + " != Order seller ID " + seller.getId());
+            log.warn("Seller mismatch: Product seller ID {} != Order seller ID {}", product.getSeller().getId(), seller.getId());
             throw new IllegalArgumentException("Product does not belong to the specified seller");
         }
-        System.out.println("[OrderService] Seller verification passed");
+        log.debug("Seller verification passed");
         
         // Check if product has stock
         if (product.getStock() != null && product.getStock() < order.getQuantity()) {
-            System.err.println("[OrderService] Insufficient stock: Available=" + product.getStock() + ", Requested=" + order.getQuantity());
+            log.warn("Insufficient stock: Available={}, Requested={}", product.getStock(), order.getQuantity());
             throw new IllegalArgumentException("Insufficient stock available");
         }
-        System.out.println("[OrderService] Stock check passed");
+        log.debug("Stock check passed");
         
         // Set the loaded entities
         order.setBuyer(buyer);
@@ -170,12 +172,12 @@ public class OrderService {
         if (order.getStatus() == null || order.getStatus().isEmpty()) {
             order.setStatus("pending");
         }
-        System.out.println("[OrderService] Order status set to: " + order.getStatus());
+        log.debug("Order status set to: {}", order.getStatus());
         
         // Save the order
-        System.out.println("[OrderService] Saving order to database...");
+        log.debug("Saving order to database");
         OrderEntity savedOrder = orderRepository.save(order);
-        System.out.println("[OrderService] Order saved successfully with ID: " + savedOrder.getId());
+        log.info("Order saved successfully with ID: {}", savedOrder.getId());
         
         // Optionally: Decrease product stock
         if (product.getStock() != null) {
@@ -194,7 +196,7 @@ public class OrderService {
             );
         } catch (Exception e) {
             // Log error but don't fail the order creation
-            System.err.println("Failed to create notification: " + e.getMessage());
+            log.error("Failed to create notification: {}", e.getMessage(), e);
         }
         
         return savedOrder;
@@ -263,7 +265,7 @@ public class OrderService {
                 }
             } catch (Exception e) {
                 // Log error but don't fail the status update
-                System.err.println("Failed to create notification: " + e.getMessage());
+                log.error("Failed to create notification: {}", e.getMessage(), e);
             }
             
             return updatedOrder;

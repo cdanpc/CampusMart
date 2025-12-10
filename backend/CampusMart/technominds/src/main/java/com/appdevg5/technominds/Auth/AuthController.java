@@ -11,6 +11,9 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final String ERROR_KEY = "error";
+    private static final String MESSAGE_KEY = "message";
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -24,10 +27,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Registration failed"));
+                    .body(Map.of(ERROR_KEY, "Registration failed"));
         }
     }
 
@@ -38,16 +41,16 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Login failed"));
+                    .body(Map.of(ERROR_KEY, "Login failed"));
         }
     }
 
     @GetMapping("/test")
     public ResponseEntity<Map<String, String>> test() {
-        return ResponseEntity.ok(Map.of("message", "Auth API is working!"));
+        return ResponseEntity.ok(Map.of(MESSAGE_KEY, "Auth API is working!"));
     }
 
     /**
@@ -61,7 +64,7 @@ public class AuthController {
             return ResponseEntity.ok(userInfo);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of(ERROR_KEY, e.getMessage()));
         }
     }
 
@@ -77,20 +80,20 @@ public class AuthController {
             
             if (email == null || plainPassword == null) {
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Email and password are required"));
+                        .body(Map.of(ERROR_KEY, "Email and password are required"));
             }
             
             authService.fixUserPassword(email, plainPassword);
             return ResponseEntity.ok(Map.of(
-                    "message", "Password successfully rehashed",
+                    MESSAGE_KEY, "Password successfully rehashed",
                     "email", email
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to fix password"));
+                    .body(Map.of(ERROR_KEY, "Failed to fix password"));
         }
     }
 
@@ -103,18 +106,18 @@ public class AuthController {
             @Valid @RequestBody ChangePasswordRequest request) {
         try {
             authService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
-            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+            return ResponseEntity.ok(Map.of(MESSAGE_KEY, "Password changed successfully"));
         } catch (IllegalArgumentException e) {
             // Handle both "user not found" and "incorrect password" errors
             if (e.getMessage().contains("incorrect")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", e.getMessage()));
+                        .body(Map.of(ERROR_KEY, e.getMessage()));
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to change password"));
+                    .body(Map.of(ERROR_KEY, "Failed to change password"));
         }
     }
 }

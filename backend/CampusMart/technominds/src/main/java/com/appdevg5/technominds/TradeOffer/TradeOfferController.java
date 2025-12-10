@@ -12,7 +12,7 @@ import java.util.Map;
  * Base URL: /api/tradeoffers
  */
 @RestController
-@RequestMapping("/api/trade-offers")
+@RequestMapping("/api/tradeoffers")
 public class TradeOfferController {
 
     private final TradeOfferService tradeOfferService;

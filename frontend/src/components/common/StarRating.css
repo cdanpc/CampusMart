@@ -1,0 +1,30 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star {
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.star--filled {
+  fill: #fbbf24;
+}
+
+.star--half {
+  fill: #fbbf24;
+}
+
+.star--empty {
+  fill: none;
+  color: #d1d5db;
+}
+
+.star-rating__value {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+}

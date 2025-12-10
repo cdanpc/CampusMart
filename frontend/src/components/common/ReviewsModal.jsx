@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FiX, FiStar } from 'react-icons/fi';
+import StarRating from './StarRating';
 import './ReviewsModal.css';
 
 export default function ReviewsModal({ isOpen, onClose, reviews, sellerRating, totalReviews, sellerName }) {
@@ -10,23 +11,6 @@ export default function ReviewsModal({ isOpen, onClose, reviews, sellerRating, t
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  };
-
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FiStar key={`full-${i}`} className="star star--filled" />);
-    }
-    if (hasHalfStar) {
-      stars.push(<FiStar key="half" className="star star--half" />);
-    }
-    while (stars.length < 5) {
-      stars.push(<FiStar key={`empty-${stars.length}`} className="star star--empty" />);
-    }
-    return stars;
   };
 
   const sortReviews = (reviewsList) => {
@@ -106,7 +90,7 @@ export default function ReviewsModal({ isOpen, onClose, reviews, sellerRating, t
                       </div>
                     </div>
                     <div className="review-stars-inline">
-                      {renderStars(review.rating)}
+                      <StarRating rating={review.rating} size={18} />
                     </div>
                   </div>
                   <p className="reviews-modal-item__text">{review.review_text}</p>

@@ -1,0 +1,122 @@
+.seller-info-card {
+  background: var(--color-white, #ffffff);
+  border-radius: var(--radius-xl, 12px);
+  box-shadow: var(--shadow-xl, 0 10px 25px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--color-border, #e5e7eb);
+  padding: var(--space-3, 0.75rem);
+  width: 100%;
+}
+
+.seller-info-card__no-data {
+  padding: var(--space-4, 1rem);
+  text-align: center;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.seller-info-card__title {
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--color-text, #111827);
+  padding-bottom: var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.seller-info-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.seller-info-card__name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-weight: 600;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text, #111827);
+  margin-bottom: var(--space-1, 0.25rem);
+}
+
+.seller-info-card__icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary, #6366f1);
+  flex-shrink: 0;
+}
+
+.seller-info-card__link {
+  color: var(--color-primary, #6366f1);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.seller-info-card__link:hover {
+  color: var(--color-primary-active, #4f46e5);
+  text-decoration: underline;
+}
+
+.seller-info-card__text {
+  color: var(--color-text, #111827);
+}
+
+.seller-info-card__contacts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.seller-info-card__contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: var(--color-gray-50, #f9fafb);
+  border-radius: var(--radius-md, 6px);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #6b7280);
+  transition: background 0.2s ease;
+}
+
+.seller-info-card__contact-item:hover {
+  background: var(--color-gray-100, #f3f4f6);
+}
+
+.seller-info-card__contact-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-gray-500, #6b7280);
+  flex-shrink: 0;
+  border-radius: var(--radius-sm, 4px);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s;
+}
+
+.seller-info-card__contact-item:hover .seller-info-card__contact-icon {
+  background: var(--color-primary, #6366f1);
+  color: var(--color-white, #ffffff);
+}
+
+.seller-info-card__contact-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.seller-info-card__member-since {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-tertiary, #9ca3af);
+  margin-top: var(--space-2, 0.5rem);
+  padding-top: var(--space-2, 0.5rem);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  line-height: 1.3;
+}

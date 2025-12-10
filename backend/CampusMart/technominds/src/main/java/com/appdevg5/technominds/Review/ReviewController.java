@@ -1,6 +1,7 @@
 package com.appdevg5.technominds.Review;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.util.List;
  * REST Controller for managing user reviews and ratings.
  * Base URL: /api/reviews
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/reviews")
 public class ReviewController {
@@ -51,8 +53,7 @@ public class ReviewController {
             List<ReviewEntity> reviews = reviewService.getReviewsByProductId(productId);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
-            System.err.println("Error fetching reviews for product " + productId + ": " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error fetching reviews for product {}: {}", productId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -69,26 +70,24 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<?> createReview(@Valid @RequestBody ReviewEntity review) {
         try {
-            System.out.println("[ReviewController] Received review creation request:");
-            System.out.println("  Reviewer ID: " + (review.getReviewer() != null ? review.getReviewer().getId() : "null"));
-            System.out.println("  Seller ID: " + (review.getSeller() != null ? review.getSeller().getId() : "null"));
-            System.out.println("  Product ID: " + (review.getProduct() != null ? review.getProduct().getId() : "null"));
-            System.out.println("  Order ID: " + (review.getOrder() != null ? review.getOrder().getId() : "null"));
-            System.out.println("  Rating: " + review.getRating());
-            System.out.println("  Comment: " + review.getComment());
+            log.debug("Received review creation request: reviewerId={}, sellerId={}, productId={}, orderId={}, rating={}",
+                    review.getReviewer() != null ? review.getReviewer().getId() : null,
+                    review.getSeller() != null ? review.getSeller().getId() : null,
+                    review.getProduct() != null ? review.getProduct().getId() : null,
+                    review.getOrder() != null ? review.getOrder().getId() : null,
+                    review.getRating());
             
             ReviewEntity newReview = reviewService.createReviewWithValidation(review);
             return new ResponseEntity<>(newReview, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            System.err.println("[ReviewController] Validation error: " + e.getMessage());
+            log.warn("Validation error creating review: {}", e.getMessage());
             return ResponseEntity.badRequest()
                     .body(java.util.Map.of(
                             "message", e.getMessage(),
                             "timestamp", java.time.LocalDateTime.now().toString()
                     ));
         } catch (Exception e) {
-            System.err.println("[ReviewController] Unexpected error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Unexpected error creating review: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(java.util.Map.of(
                             "message", "Failed to create review: " + e.getMessage(),
@@ -105,7 +104,6 @@ public class ReviewController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // DELETE /api/reviews/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Integer id) {
         reviewService.deleteReview(id);

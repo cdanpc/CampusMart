@@ -6,6 +6,7 @@ import ConfirmModal from './ConfirmModal';
 import ImagePreviewModal from './ImagePreviewModal';
 import { useAuth } from '../../context/AuthContext';
 import { createProduct } from '../../services/productService';
+import { compressImages, getErrorMessage, validateRequired, validateNumber } from '../../utils';
 import './ProductPanel.css';
 
 export default function CreateProductPanel({ isOpen, onClose, onProductCreated }) {
@@ -80,46 +81,6 @@ export default function CreateProductPanel({ isOpen, onClose, onProductCreated }
     }
   };
 
-  const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              const compressedReader = new FileReader();
-              compressedReader.onloadend = () => resolve(compressedReader.result);
-              compressedReader.onerror = reject;
-              compressedReader.readAsDataURL(blob);
-            },
-            'image/jpeg',
-            quality
-          );
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleImageClick = (index) => {
     setPreviewImageIndex(index);
     setShowImagePreview(true);
@@ -130,21 +91,25 @@ export default function CreateProductPanel({ isOpen, onClose, onProductCreated }
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Product name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
+    const nameResult = validateRequired(formData.name, 'Product name');
+    if (!nameResult.valid) newErrors.name = nameResult.error;
+
+    const descResult = validateRequired(formData.description, 'Description');
+    if (!descResult.valid) newErrors.description = descResult.error;
     
     if (formData.listing_type !== 'trade_only') {
-      if (!formData.price) {
-        newErrors.price = 'Price is required for sale items';
-      } else if (isNaN(formData.price) || Number(formData.price) < 0) {
-        newErrors.price = 'Please enter a valid price';
-      }
+      const priceResult = validateNumber(formData.price, { min: 0, fieldName: 'Price' });
+      if (!priceResult.valid) newErrors.price = priceResult.error;
     }
 
     if (!formData.category_id) newErrors.category_id = 'Please select a category';
     if (!formData.condition) newErrors.condition = 'Please select item condition';
-    if (!formData.stock || formData.stock < 1) newErrors.stock = 'Stock must be at least 1';
-    if (!formData.contact_info.trim()) newErrors.contact_info = 'Contact information is required';
+    
+    const stockResult = validateNumber(formData.stock, { min: 1, fieldName: 'Stock', allowDecimal: false });
+    if (!stockResult.valid) newErrors.stock = stockResult.error;
+    
+    const contactResult = validateRequired(formData.contact_info, 'Contact information');
+    if (!contactResult.valid) newErrors.contact_info = contactResult.error;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -161,8 +126,7 @@ export default function CreateProductPanel({ isOpen, onClose, onProductCreated }
 
       setLoading(true);
       try {
-        const imagePromises = formData.images.map(file => compressImage(file));
-        const imageDataUrls = await Promise.all(imagePromises);
+        const imageDataUrls = await compressImages(formData.images);
 
         const imagesArray = imageDataUrls.map((dataUrl, index) => ({
           imageUrl: dataUrl,
@@ -205,15 +169,7 @@ export default function CreateProductPanel({ isOpen, onClose, onProductCreated }
         if (onProductCreated) onProductCreated();
       } catch (error) {
         console.error('Error creating product:', error);
-        let errorMessage = 'Failed to create product. Please try again.';
-        
-        if (error.code === 'ERR_NETWORK') {
-          errorMessage = 'Network error: Unable to connect to server.';
-        } else if (error.response) {
-          errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
-        }
-        
-        setErrors({ submit: errorMessage });
+        setErrors({ submit: getErrorMessage(error, 'Failed to create product. Please try again.') });
       } finally {
         setLoading(false);
       }

@@ -1,5 +1,6 @@
 package com.appdevg5.technominds.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +16,7 @@ import java.util.Map;
  * Global Exception Handler
  * Catches all unhandled exceptions and returns proper JSON responses
  */
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -32,7 +34,7 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         body.put("path", request.getDescription(false).replace("uri=", ""));
         
-        System.err.println("[GlobalExceptionHandler] IllegalArgumentException: " + ex.getMessage());
+        log.warn("IllegalArgumentException: {}", ex.getMessage());
         
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -57,7 +59,7 @@ public class GlobalExceptionHandler {
         body.put("errors", errors);
         body.put("path", request.getDescription(false).replace("uri=", ""));
         
-        System.err.println("[GlobalExceptionHandler] Validation errors: " + errors);
+        log.warn("Validation errors: {}", errors);
         
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -76,8 +78,7 @@ public class GlobalExceptionHandler {
         body.put("message", "A required value was null: " + ex.getMessage());
         body.put("path", request.getDescription(false).replace("uri=", ""));
         
-        System.err.println("[GlobalExceptionHandler] NullPointerException caught:");
-        ex.printStackTrace();
+        log.error("NullPointerException caught", ex);
         
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -97,9 +98,7 @@ public class GlobalExceptionHandler {
         body.put("exception", ex.getClass().getSimpleName());
         body.put("path", request.getDescription(false).replace("uri=", ""));
         
-        System.err.println("[GlobalExceptionHandler] Unhandled exception: " + ex.getClass().getName());
-        System.err.println("Message: " + ex.getMessage());
-        ex.printStackTrace();
+        log.error("Unhandled exception: {} - {}", ex.getClass().getName(), ex.getMessage(), ex);
         
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

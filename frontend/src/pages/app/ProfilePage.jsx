@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSettings, FiMail, FiPhone, FiCalendar, FiStar, FiDollarSign, FiHeart, FiPackage } from 'react-icons/fi';
+import { FiSettings, FiMail, FiPhone, FiCalendar, FiStar, FiHeart, FiPackage } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { getProductsBySeller, deleteProduct, getProductById } from '../../services/productService';
 import { updateProfile, getProfileById } from '../../services/profileService';
 import { getOrdersByBuyer, getOrdersBySeller } from '../../services/orderService';
 import { getReviewsBySeller, createReview } from '../../services/reviewService';
+import { formatDate } from '../../utils';
 import CreateProductPanel from '../../components/common/CreateProductPanel';
 import EditProductPanel from '../../components/common/EditProductPanel';
 import EditProfileModal from '../../components/common/EditProfileModal';
 import ReceiptModal from '../../components/common/ReceiptModal';
 import RatingModal from '../../components/common/RatingModal';
 import ReviewsModal from '../../components/common/ReviewsModal';
+import StarRating from '../../components/common/StarRating';
 import './ProfilePage.css';
 
 export default function ProfilePage() {
@@ -30,8 +32,6 @@ export default function ProfilePage() {
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sellerReviews, setSellerReviews] = useState([]);
-  const [reviewsPage, setReviewsPage] = useState(0);
-  const [reviewsPerPage] = useState(5);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
   // Fetch user's products
@@ -142,28 +142,6 @@ export default function ProfilePage() {
   // Use actual user data from AuthContext
   const currentUser = user?.profile || {};
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  };
-
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FiStar key={`full-${i}`} className="star star--filled" />);
-    }
-    if (hasHalfStar) {
-      stars.push(<FiStar key="half" className="star star--half" />);
-    }
-    while (stars.length < 5) {
-      stars.push(<FiStar key={`empty-${stars.length}`} className="star star--empty" />);
-    }
-    return stars;
-  };
-
   const getInitials = (firstName, lastName) => {
     return `${firstName[0]}${lastName[0]}`;
   };
@@ -189,7 +167,7 @@ export default function ProfilePage() {
       category_id: product.category?.id || product.category_id || 1,
       listing_type: product.tradeOnly || product.trade_only ? 'trade_only' : 'for_sale',
       trade_only: product.tradeOnly || product.trade_only || false,
-      is_available: product.isAvailable !== undefined ? product.isAvailable : product.is_available,
+      is_available: product.isAvailable ?? product.is_available ?? true,
       images: product.images || product.productImages || [],
       viewCount: product.viewCount || product.view_count || 0,
       likeCount: product.likeCount || product.like_count || 0
@@ -242,7 +220,7 @@ export default function ProfilePage() {
       
       // Call API to save rating
       await createReview({
-        reviewerId: user.profile.profile_id,
+        reviewerId: user.profile.id,
         sellerId: ratingData.sellerId,
         productId: ratingData.productId,
         orderId: ratingData.orderId,
@@ -251,7 +229,7 @@ export default function ProfilePage() {
       });
       
       // Refresh reviews after submission
-      await loadReviews();
+      await fetchSellerReviews();
       
       // Close modal
       setIsRatingOpen(false);
@@ -381,7 +359,7 @@ export default function ProfilePage() {
                                 {review.reviewer?.firstName || review.reviewer?.first_name || 'Anonymous'} {review.reviewer?.lastName?.[0] || review.reviewer?.last_name?.[0] || ''}.
                               </p>
                               <div className="seller-review-stars">
-                                {renderStars(review.rating)}
+                                <StarRating rating={review.rating} size={16} />
                               </div>
                             </div>
                           </div>

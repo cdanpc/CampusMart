@@ -31,8 +31,13 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for stateless API
             .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Enable CORS with custom config
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Allow auth endpoints without token
-                .requestMatchers("/api/**").permitAll() // Allow all API endpoints (we'll handle auth manually)
+                // Public endpoints - no authentication required
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/test").permitAll()
+                
+                // Protected endpoints - require authentication
+                .requestMatchers("/api/**").authenticated()
+                
+                // All other requests require authentication
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter

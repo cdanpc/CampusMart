@@ -27,7 +27,6 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    // GET /api/products/{id}
     @GetMapping("/{id}")
     public ResponseEntity<ProductEntity> getProductById(@PathVariable Integer id) {
         return productService.getProductById(id)
@@ -35,7 +34,6 @@ public class ProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // GET /api/products/seller/{sellerId} - Get products listed by a specific seller
     @GetMapping("/seller/{sellerId}")
     public List<ProductEntity> getProductsBySeller(
             @PathVariable Integer sellerId,
@@ -46,7 +44,6 @@ public class ProductController {
         return productService.getProductsBySeller(sellerId);
     }
 
-    // GET /api/products/search?term={term}
     @GetMapping("/search")
     public List<ProductEntity> searchProducts(@RequestParam(name = "term", required = false) String term) {
         return productService.searchProducts(term);

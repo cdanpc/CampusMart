@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useSearchParams } from 'react-router-dom';
-import { FiUser, FiHeart } from 'react-icons/fi';
 import { getAllProducts, likeProduct, searchProducts } from '../services/productService';
-// Remove this if AppHeader is in a layout component:
-// import AppHeader from '../components/layout/AppHeader';
+import { formatCurrency, getPrimaryImage } from '../utils';
+import ProductCard from '../components/common/ProductCard';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
@@ -209,70 +208,16 @@ export default function DashboardPage() {
             </div>
           ) : (
           <div className="product-grid">
-            {filteredProducts.map(product => {
-              // Handle both backend (camelCase) and mock data formats
-              const productName = product.name;
-              const productPrice = product.price;
-              const tradeOnly = product.tradeOnly || product.trade_only;
-              const tradeOk = product.trade_ok;
-              const sellerName = product.seller?.name || product.seller?.firstName + ' ' + (product.seller?.lastName || '');
-              const likeCount = product.likeCount || product.like_count || 0;
-              // Always use the first image from images array
-              const productImages = product.images || product.productImages || [];
-              const productImage = productImages.length > 0 
-                ? (productImages[0]?.imageUrl || productImages[0]?.url)
-                : 'https://placehold.co/400x300/E5E7EB/6B7280?text=No+Image';
-              const categoryName = product.category?.name || 'Uncategorized';
-              
-              return (
-                <Link 
-                  key={product.id} 
-                  to={`/product/${product.id}`}
-                  className="product-card"
-                >
-                  <div className="product-card__image">
-                    <img 
-                      src={productImage}
-                      alt={productName}
-                    />
-                  </div>
-                  <div className="product-card__content">
-                    <h3 className="product-card__name">{productName}</h3>
-                    <div className="product-card__price">
-                      {tradeOnly ? (
-                        <span className="trade-only">Trade Only</span>
-                      ) : (
-                        <>
-                          <span className="price">₱{productPrice?.toFixed(2) || '0.00'}</span>
-                          {tradeOk && <span className="trade-ok">(Trade OK)</span>}
-                        </>
-                      )}
-                    </div>
-                    <div className="product-card__tags">
-                      <span className="tag">{categoryName}</span>
-                      {product.tags?.map(tag => (
-                        <span key={tag} className="tag">{tag}</span>
-                      ))}
-                    </div>
-                    <div className="product-card__footer">
-                      <div className="seller">
-                        <FiUser className="seller-icon" />
-                        <span className="seller-name">{sellerName}</span>
-                      </div>
-                      <button 
-                        className="likes"
-                        onClick={(e) => handleLike(product.id, e)}
-                        disabled={likingProducts.has(product.id)}
-                        title="Like this product"
-                      >
-                        <FiHeart className="like-icon" />
-                        <span className="like-count">{likeCount}</span>
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            {filteredProducts.map(product => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onLike={handleLike}
+                isLiking={likingProducts.has(product.id)}
+                showSeller={true}
+                showStats={false}
+              />
+            ))}
           </div>
           )}
         </div>
